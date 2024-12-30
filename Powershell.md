@@ -168,3 +168,4 @@ Get-Process | Export-CSV processes.csv
     Write-Host "My variable is $var"            # My variable is foobar
     Write-Host 'My variable is $var'            # My variable is $var
 ```
+Adding to the file.
