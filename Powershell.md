@@ -95,13 +95,13 @@ Get-Process | Export-CSV processes.csv
 ```
 
 ### Import-CSV \<filepath\>
-    Creates table-like custom objects from the items in a csv file
+> Creates table-like custom objects from the items in a csv file
 
 ### Export-Clixml \<filepath\>
-    Creates an XML-based representation of an object(s) and stores it in a file. Clixml is best way to retain all properties of an object through export and import.
+> Creates an XML-based representation of an object(s) and stores it in a file. Clixml is best way to retain all properties of an object through export and import.
 
 ### Import-Clixml \<filepath\>
-    Imports a Clixml file and creates corresponding objects in Powershell.
+> Imports a Clixml file and creates corresponding objects in Powershell.
 
 ### ConvertTo-CSV
 ### ConvertFrom-CSV
@@ -109,9 +109,10 @@ Get-Process | Export-CSV processes.csv
 ### ConvertFrom-Clixml
 
 ### Out-File \<filepath\>
-    Writes output of cmdlet to specified file
-        -Append appends the content to a file
-        -NoClobber don't overwrite an existing file
+- Writes output of cmdlet to specified file  
+- Parameters  
+    - \-Append: appends the content to a file  
+    - \-NoClobber: don't overwrite an existing file  
 
 ```powershell
     Get-ChildItem | Out-File "./DirContents.txt"                # save directory contents to file
@@ -119,9 +120,61 @@ Get-Process | Export-CSV processes.csv
 ```
 
 # Iteration
-## For-Each
-    ***TODO***
 
+## Foreach 
+
+> - *Syntax: foreach \$\<item\> in $\<collection\> { code here referencing $item }*
+>
+> - This is a **Statement**, not a cmdlet. 
+>
+> - Iterate over the values of a collection.
+>
+> - Iterate over every value in collection, with temp variable $item as the current value
+
+```powershell
+    $array = '1', 'two', '3'
+    foreach ($value in $array) {Write-Host $value}      # loops three times, printing 1, two, and 3  
+
+    foreach ($file in Get-ChildItem) {                  # iterate over all gci results, only display certain results
+        if ($file.Length -gt 100KB) {
+            Write-Host $file
+            Write-Host $file.Length
+            Write-Host $file.LastAccessTime
+        }
+    }
+```
+
+## ForEach-Object
+> - This is a *Cmdlet* -- it receives input from the pipeline
+>
+> - Take action on each value using the $_ operator   
+>
+    Parameters:  
+        -Process \{ code block \}- What action to take for each object (positional argument)
+        -Begin \{ code block \}- What action to take before processing any objects
+        -End \{code block \}- What action to take after processing all objects
+
+```powershell
+
+    35, 12, 22 | ForEach-Object -Process { $_ / 2 }    # outputs 17.5, 6, 11
+
+    33, 12, 10 | ForEach-Object -Begin {echo "hi"} -End {"bye"} -Process {echo "hello"}
+                                    # Outputs hi, hello, hello, hello, bye
+
+
+    # Getting formatted file hashes for all items in present working directory
+    Get-FileHash * -Algorithm MD5 | ForEach-Object 
+        
+        -begin {
+        "Evidence Hashes:"
+        } 
+        
+        -process {
+        $hash=$_.Hash; 
+        $hash = $hash -replace '(....(?!$))', '$1-';
+        $path = $_.Path; "$hash `t`t$path"
+        }
+```
 
 # Variables
 
@@ -168,4 +221,22 @@ Get-Process | Export-CSV processes.csv
     Write-Host "My variable is $var"            # My variable is foobar
     Write-Host 'My variable is $var'            # My variable is $var
 ```
-Adding to the file.
+
+# Strings
+
+## Select-String
+
+- Find text in strings and files
+
+> Usage: Select-String \[-Pattern\] \<pattern\> \[-Path\] \<path\>
+
+- Parameters:
+
+```powershell
+    -CaseSensitive
+    -SimpleMatch              # ignore regex
+```
+
+```powershell
+
+```
